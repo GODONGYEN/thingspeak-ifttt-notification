@@ -11,5 +11,16 @@
   "test_frequency": "On Data Insertion",
   "run_option": "Run action only the first time the condition is met",
   "test_values": [500, 700, 900, 950, 500, 900],
-  "write_interval_seconds": 20
+  "write_interval_seconds": 20,
+  "thinghttp_status": "not_saved_http_503",
+  "fallback": {
+    "route": "React -> MATLAB Analysis -> IFTTT",
+    "analysis_name": "IFTTT_Alert_Fallback",
+    "analysis_id": 431384,
+    "react_name": "Pot_Over_700_Fallback",
+    "react_id": 139875,
+    "verified_automatic_ifttt_runs": 2,
+    "mobile_receipt_verified": true,
+    "mobile_receipt_confirmation": "User confirmed the 19:55 KST automatic notification"
+  }
 }

@@ -2,9 +2,11 @@
 
 ThingSpeak 채널에 기록한 가변저항값이 **700을 초과할 때** IFTTT 앱으로 알림을 보내는 실습입니다. 채널 데이터 저장, 조건 판단, Webhook 호출, 모바일 알림의 연결 과정을 정리했습니다.
 
-> **진행 상태 · 2026년 11월 23일:** IFTTT Applet을 생성하고 직접 호출로 Webhooks·Notifications 실행을 확인했습니다. 채널에 API Request로 500·700·900을 기록하고 entry ID 20·21·22를 확인했습니다. **ThingHTTP 저장은 HTTP 503 오류로 완료하지 못했습니다.** 원래 경로의 React 연동 및 휴대폰 수신 확인은 진행 중입니다.
+> **실습 결과 · 2026년 11월 23일:** **대체 경로 `React → MATLAB Analysis → IFTTT`의 자동 실행 2회와 휴대폰의 실제 수신을 확인했습니다.** 700에서는 실행되지 않았고, 950에서는 중복 실행이 없었으며, 500으로 내린 뒤 900으로 올리면 다시 실행됐습니다. **원래 과제의 ThingHTTP 저장은 HTTP 503 오류로 미완료**입니다. 휴대폰 수신은 마지막 19:55 자동 시험에 대해 사용자가 확인했습니다.
 
 ## 1. 동작 원리
+
+아래는 과제에서 요구한 원래 경로입니다. 실제로 시험한 대체 경로는 [9절](#9-thinghttp-장애에-대응한-대체-연동)에 구분해 정리했습니다.
 
 ```mermaid
 flowchart LR
@@ -119,20 +121,24 @@ https://api.thingspeak.com/update?api_key=<THINGSPEAK_WRITE_API_KEY>&field1=700
 https://api.thingspeak.com/update?api_key=<THINGSPEAK_WRITE_API_KEY>&field1=900
 ```
 
-요청은 한 번에 하나씩 보내고, 실습에서는 사이에 **20초 이상** 간격을 둡니다. 무료 라이선스의 채널 갱신 최소 간격은 15초이며 계정별 제한을 따릅니다. 응답이 양의 정수이면 새 `entry_id`, `0`이면 기록 실패입니다. `200 OK`만으로 기록 성공을 판단하지 않습니다. [데이터 기록 API](https://www.mathworks.com/help/thingspeak/writedata.html), [API 제한](https://www.mathworks.com/help/thingspeak/channel-control.html)
+요청은 한 번에 하나씩 보내며, 재현 시 **20초 이상** 간격을 권장합니다. 무료 라이선스의 채널 갱신 최소 간격은 15초이며 계정별 제한을 따릅니다. 응답이 양의 정수이면 새 `entry_id`, `0`이면 기록 실패입니다. `200 OK`만으로 기록 성공을 판단하지 않습니다. [데이터 기록 API](https://www.mathworks.com/help/thingspeak/writedata.html), [API 제한](https://www.mathworks.com/help/thingspeak/channel-control.html)
 
-### 시험 순서와 예상 결과
+### 실제 시험 결과
 
-| 순서 | 입력 Field 1 | 조건 | 예상 추가 알림 | 실제 결과 |
-|---|---:|---|---|---|
-| 1 | 500 | 거짓 | 없음 · 초기화 | 저장 성공 · entry 20 / 알림 시험 전 |
-| 2 | 700 | 거짓 | 없음 · 경계값 | 저장 성공 · entry 21 / 알림 시험 전 |
-| 3 | 900 | 참으로 전환 | 1회 실행 대상 | 저장 성공 · entry 22 / 알림 시험 전 |
-| 4 | 950 | 참 유지 | 없음 | 미실행 |
-| 5 | 500 | 거짓으로 복귀 | 없음 · 재무장 | 미실행 |
-| 6 | 900 | 다시 참으로 전환 | 1회 실행 대상 | 미실행 |
+먼저 React 등록 전 API 기록 단계만 시험했습니다. 19:31:12, 19:31:49, 19:32:20(한국 시간)에 500·700·900이 각각 entry 20·21·22로 저장되었습니다. [초기 API 기록](evidence/live-channel-writes.json)
 
-실제 API 기록은 2026년 11월 23일 한국 시간 19:31:12, 19:31:49, 19:32:20에 수행했습니다. [기록 결과](evidence/live-channel-writes.json)는 공개 채널의 feed 조회로 재확인했습니다. **이때 React는 아직 등록 전이므로 알림 연동 시험은 아닙니다.** React 저장 후 첫 단계부터 다시 시험합니다.
+이후 **대체 경로의 React를 저장한 뒤** 아래 순서로 전체 흐름을 시험했습니다. 표의 실행 결과는 IFTTT 서버의 Notifications 액션 기준이며, 마지막 19:55 실행의 휴대폰 수신은 별도로 사용자 확인을 받았습니다.
+
+| 순서 | Field 1 | entry ID | 입력 시각 KST | IFTTT 추가 실행 | 확인 내용 |
+|---|---:|---:|---|---|---|
+| 1 | 500 | 23 | 19:51:44 | 0회 | 조건 거짓 |
+| 2 | 700 | 24 | 19:52:24 | 0회 | 경계값도 거짓 |
+| 3 | 900 | 25 | 19:52:39 | 1회 | 첫 초과 시 실행 |
+| 4 | 950 | 26 | 19:53:29 | 0회 | 참 유지 시 중복 방지 |
+| 5 | 500 | 27 | 19:54:18 | 0회 | 조건 초기화 |
+| 6 | 900 | 28 | 19:55:11 | 1회 | 다시 초과하면 재실행 |
+
+[실제 채널 기록](evidence/live-fallback-writes.json), [IFTTT 실행 기록](evidence/fallback-activity.json)에서 확인할 수 있습니다. IFTTT 총 실행은 직접 시험 1회(19:40)와 대체 경로 자동 실행 2회(19:52, 19:55)를 합해 3회입니다.
 
 알림 도착 시간은 서비스나 휴대폰 상태에 따라 달라질 수 있습니다. 입력 시각, 새 entry ID, IFTTT 실행 이력, 휴대폰 알림을 함께 비교합니다.
 
@@ -152,10 +158,10 @@ python3 test_channel.py --execute
 - [x] Applet의 Webhooks 이벤트와 Notifications 액션
 - [x] Applet 활성 상태
 - [ ] ThingHTTP 연결 저장 화면 · 모든 키 가림
-- [ ] React의 채널·필드·비교식·실행 옵션
+- [x] 대체 경로 React의 채널·필드·비교식·실행 옵션
 - [x] 500·700·900 기록 결과와 entry ID
-- [ ] IFTTT 실행 이력과 휴대폰의 실제 알림
-- [ ] 실제 시험 결과로 위 표 갱신
+- [x] IFTTT 실행 이력과 휴대폰의 실제 알림 · 최종 자동 시험 사용자 확인
+- [x] 대체 경로의 실제 시험 결과로 위 표 갱신
 - [x] GitHub 자료 공개
 - [ ] 실제 연동 확인 후 과제 게시글에 링크 제출
 
@@ -168,6 +174,42 @@ python3 test_channel.py --execute
 3. 첫 전환 옵션을 사용 중이면 500을 기록하고 간격을 둔 뒤 900으로 다시 시험합니다.
 4. IFTTT 이벤트의 대소문자, Applet 활성 상태와 실행 이력을 확인합니다.
 5. 휴대폰 앱 계정과 OS 알림 허용, 집중 모드 등을 확인합니다.
+
+이번 실습에서는 첫 직접 시험 알림이 수신되지 않아 계정 `god640388`과 알림 허용을 확인했습니다. 이후 **19:55 자동 시험 알림은 휴대폰에 도착했다고 사용자가 확인했습니다.** 휴대폰 수신은 사용자 확인으로 기록했으며, 휴대폰 화면 캡처는 첨부하지 않았습니다.
+
+## 9. ThingHTTP 장애에 대응한 대체 연동
+
+사용자 동의를 받아 ThingSpeak의 MATLAB Analysis가 Webhook을 호출하도록 구성했습니다. 과제에서 지정한 ThingHTTP 경로와는 다르며, ThingHTTP 저장 성공으로 대체 기록하지 않았습니다.
+
+```mermaid
+flowchart LR
+  A[API Request로 Field 1 기록] --> B{React: Field 1 > 700}
+  B -->|거짓에서 참으로 전환| C[MATLAB Analysis의 webread]
+  C --> D[IFTTT Webhooks]
+  D --> E[Notifications 액션 실행]
+  E --> F[휴대폰 IFTTT 앱 수신 확인]
+```
+
+| 항목 | 실제 저장한 값 |
+|---|---|
+| MATLAB Analysis 이름 | `IFTTT_Alert_Fallback` |
+| MATLAB Analysis ID | `431384` |
+| React 이름 | `Pot_Over_700_Fallback` |
+| React ID | `139875` |
+| 조건 | 채널 3565315 / Field 1 / Numeric / `is greater than 700` |
+| 검사 시점 | `On Data Insertion` |
+| 실행 대상 | `MATLAB Analysis → IFTTT_Alert_Fallback` |
+| 실행 옵션 | `Only the first time the condition is met` |
+
+비공개 편집기에 저장한 코드는 `webread`로 본인의 Webhook URL을 요청하고 결과를 출력합니다. 실패 메시지에 키가 노출되지 않도록 예외를 처리했습니다. 공개용 [MATLAB 코드 예시](ifttt_alert_fallback.m)에는 실제 키를 제거했습니다. [MATLAB Analysis 문서](https://www.mathworks.com/help/thingspeak/matlab-analysis-app.html), [webread 문서](https://www.mathworks.com/help/matlab/ref/webread.html)
+
+![저장된 대체 분석 앱](evidence/10-matlab-analysis-saved.jpg)
+
+![저장된 React 조건과 최종 실행 시각](evidence/11-react-last-run.jpg)
+
+![대체 경로의 실제 IFTTT 자동 실행 이력](evidence/12-ifttt-automatic-activity.jpg)
+
+현재 채널의 마지막 시험값은 900입니다. 다시 시험할 때는 500을 먼저 기록한 뒤 간격을 두고 900을 기록합니다. ThingHTTP가 복구되면 4절 설정을 저장하고 React의 실행 대상을 ThingHTTP로 변경해 원래 경로를 별도로 재검증해야 합니다.
 
 ## 참고 자료
 

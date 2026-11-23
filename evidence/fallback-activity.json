@@ -1,0 +1,15 @@
+{
+  "applet_id": "uEeqPN2f",
+  "total_runs": 3,
+  "direct_runs": 1,
+  "react_matlab_runs": 2,
+  "activity_times_kst": [
+    "2026-11-23 19:40",
+    "2026-11-23 19:52",
+    "2026-11-23 19:55"
+  ],
+  "ifttt_trigger_and_notification_action_ran": true,
+  "duplicate_suppression_observed": true,
+  "mobile_receipt": "User confirmed receipt of the 19:55 KST automatic notification",
+  "confirmation_source": "User report; phone screenshot not provided"
+}

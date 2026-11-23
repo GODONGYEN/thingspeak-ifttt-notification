@@ -8,5 +8,5 @@
   "ifttt_trigger_ran": true,
   "ifttt_notification_action_ran": true,
   "message": "ThingSpeak 알림: 가변저항값이 기준값 700을 초과했습니다!",
-  "mobile_receipt": "Awaiting user confirmation"
+  "mobile_receipt": "User reported not received; matching mobile account and notification permission confirmed"
 }

@@ -1,5 +1,6 @@
 % ThingHTTP 저장 장애 시 사용할 대체안: React -> MATLAB Analysis -> IFTTT
-% 과제의 ThingHTTP 방식과 다릅니다. 현재 계정에서 저장/실행한 코드는 아닙니다.
+% 과제의 ThingHTTP 방식과 다릅니다. 실제 연동에 사용한 webread 방식의 공개용 예시입니다.
+% 비공개 Analysis 431384에서는 같은 호출 흐름을 단일 줄 코드로 저장/실행했습니다.
 % 개인 키는 ThingSpeak의 비공개 MATLAB Analysis 편집기에만 입력하세요.
 
 eventName = 'Thingspeak_Alert';
