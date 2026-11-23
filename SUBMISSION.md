@@ -5,7 +5,7 @@
 ```text
 ThingSpeak와 IFTTT를 이용한 모바일 알림 실습 자료입니다.
 
-GitHub: <공개 GitHub 저장소 주소>
+GitHub: https://github.com/GODONGYEN/thingspeak-ifttt-notification
 
 Field 1의 가변저항값이 700을 초과하면 React가 ThingHTTP를 실행하고,
 IFTTT Webhooks와 Notifications를 통해 휴대폰 알림을 보내도록 설정했습니다.
