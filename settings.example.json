@@ -1,0 +1,15 @@
+{
+  "channel_id": 3565315,
+  "field": 1,
+  "threshold": 700,
+  "comparison": "is greater than",
+  "event_name": "Thingspeak_Alert",
+  "thinghttp_name": "IFTTT_Thingspeak_Alert",
+  "thinghttp_method": "GET",
+  "thinghttp_http_version": "1.1",
+  "react_name": "Pot_Over_700_Notification",
+  "test_frequency": "On Data Insertion",
+  "run_option": "Run action only the first time the condition is met",
+  "test_values": [500, 700, 900, 950, 500, 900],
+  "write_interval_seconds": 20
+}
