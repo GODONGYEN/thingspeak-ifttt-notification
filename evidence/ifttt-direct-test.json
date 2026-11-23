@@ -1,0 +1,12 @@
+{
+  "date_kst": "2026-11-23",
+  "activity_time_kst": "19:40",
+  "applet_id": "uEeqPN2f",
+  "event_name": "Thingspeak_Alert",
+  "test_type": "Direct webhook call, without ThingSpeak React or ThingHTTP",
+  "webhook_response": "Congratulations! You've fired the Thingspeak_Alert event",
+  "ifttt_trigger_ran": true,
+  "ifttt_notification_action_ran": true,
+  "message": "ThingSpeak 알림: 가변저항값이 기준값 700을 초과했습니다!",
+  "mobile_receipt": "Awaiting user confirmation"
+}

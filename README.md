@@ -2,7 +2,7 @@
 
 ThingSpeak 채널에 기록한 가변저항값이 **700을 초과할 때** IFTTT 앱으로 알림을 보내는 실습입니다. 채널 데이터 저장, 조건 판단, Webhook 호출, 모바일 알림의 연결 과정을 정리했습니다.
 
-> **진행 상태 · 2026년 11월 23일:** IFTTT Applet을 생성하고 `Connected` 상태를 확인했습니다. 기존 ThingSpeak 채널에 API Request로 500·700·900을 기록하고 entry ID 20·21·22를 확인했습니다. ThingHTTP 연결 저장·React 등록·실제 알림 수신은 아직 완료하지 않았습니다.
+> **진행 상태 · 2026년 11월 23일:** IFTTT Applet을 생성하고 직접 호출로 Webhooks·Notifications 실행을 확인했습니다. 채널에 API Request로 500·700·900을 기록하고 entry ID 20·21·22를 확인했습니다. **ThingHTTP 저장은 HTTP 503 오류로 완료하지 못했습니다.** 원래 경로의 React 연동 및 휴대폰 수신 확인은 진행 중입니다.
 
 ## 1. 동작 원리
 
@@ -61,6 +61,12 @@ https://maker.ifttt.com/trigger/Thingspeak_Alert/with/key/<IFTTT_WEBHOOK_KEY>
 
 이 주소로 직접 호출하면 **조건 검사 없이** Applet 연결만 시험합니다. 응답이 성공이어도 휴대폰에서 알림이 도착했는지 별도로 확인합니다. [IFTTT Webhooks 설명](https://ifttt.ai/maker_webhooks)
 
+2026년 11월 23일 19:40(한국 시간)에 직접 호출했고, 성공 응답과 IFTTT 실행 이력의 `Trigger ran`, `Action ran`을 확인했습니다. [직접 호출 기록](evidence/ifttt-direct-test.json)
+
+![Webhook 직접 호출 성공 응답](evidence/04-webhook-success.jpg)
+
+![IFTTT 직접 호출 실행 이력](evidence/07-ifttt-direct-activity.jpg)
+
 ## 4. ThingHTTP 연결
 
 ThingSpeak의 **Apps → ThingHTTP → New ThingHTTP**에서 다음과 같이 설정합니다.
@@ -75,6 +81,14 @@ ThingSpeak의 **Apps → ThingHTTP → New ThingHTTP**에서 다음과 같이 �
 | Content Type / Host / Headers / Body / Parse String | 비워 둠 |
 
 **Save ThingHTTP**로 저장합니다. ThingHTTP는 IFTTT 호출을 담당하고, 센서값 비교는 다음 단계의 React가 담당합니다. [ThingHTTP 공식 문서](https://www.mathworks.com/help/thingspeak/thinghttp-app.html)
+
+### 실제 저장 시 발생한 오류
+
+요청 `238493`의 편집 화면에 위 값을 입력했지만 저장 시 `HTTP ERROR 503`이 발생했습니다. 새 편집 화면과 빈 헤더 정리 후에도 같은 오류가 나타났고, 목록에서 이름이 여전히 `Request 238493`인 것을 확인했습니다. 따라서 ThingHTTP 연결 저장 성공으로 표시하지 않았습니다.
+
+![ThingHTTP 저장 시 HTTP 503 오류](evidence/05-thinghttp-503.jpg)
+
+[MathWorks 문답](https://www.mathworks.com/matlabcentral/answers/2185362-thinghttp-save-delete-returns-http-error-503)에는 11월 18일 동일한 저장 오류가 보고되었고, 11월 21일에도 계속된다는 후속 글이 있습니다. 답변에는 MATLAB Analysis의 `webread`를 이용한 대체 방식이 제안되어 있습니다. [상태 페이지](https://status.mathworks.com/)는 확인 당시 정상으로 표시되어, 현재 오류와 전체 서비스 상태를 구분했습니다.
 
 ## 5. React 조건 등록
 
