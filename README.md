@@ -2,7 +2,7 @@
 
 ThingSpeak 채널에 기록한 가변저항값이 **700을 초과할 때** IFTTT 앱으로 알림을 보내는 실습입니다. 채널 데이터 저장, 조건 판단, Webhook 호출, 모바일 알림의 연결 과정을 정리했습니다.
 
-> **진행 상태 · 2026년 11월 23일:** 기존 ThingSpeak 채널에 API Request로 500·700·900을 기록하고 entry ID 20·21·22를 확인했습니다. 설정안과 시험 도구를 공개했습니다. IFTTT 로그인 대기 중이며, ThingHTTP 연결 저장·React 등록·실제 알림 수신은 아직 완료하지 않았습니다.
+> **진행 상태 · 2026년 11월 23일:** IFTTT Applet을 생성하고 `Connected` 상태를 확인했습니다. 기존 ThingSpeak 채널에 API Request로 500·700·900을 기록하고 entry ID 20·21·22를 확인했습니다. ThingHTTP 연결 저장·React 등록·실제 알림 수신은 아직 완료하지 않았습니다.
 
 ## 1. 동작 원리
 
@@ -44,6 +44,14 @@ flowchart LR
 ```text
 ThingSpeak 알림: 가변저항값이 기준값 700을 초과했습니다!
 ```
+
+실제로 생성한 Applet의 이름은 `ThingSpeak 가변저항 700 초과 알림`, ID는 `uEeqPN2f`입니다. 저장된 이벤트와 알림 문구를 편집 화면에서 다시 확인했습니다.
+
+![저장된 Webhooks 이벤트](evidence/01-ifttt-trigger.jpg)
+
+![저장된 Notifications 알림 문구](evidence/02-ifttt-notification-action.jpg)
+
+![Applet Connected 상태](evidence/03-ifttt-connected.jpg)
 
 휴대폰의 IFTTT 앱에도 같은 계정으로 로그인하고 알림을 허용합니다. Webhooks 서비스의 **Documentation**에서 개인 키와 호출 주소를 확인합니다. 서비스 화면과 이용 가능 범위는 현재 계정에서 확인합니다.
 
@@ -127,8 +135,8 @@ python3 test_channel.py --execute
 
 ## 7. 제출 전 확인할 증빙
 
-- [ ] Applet의 Webhooks 이벤트와 Notifications 액션
-- [ ] Applet 활성 상태
+- [x] Applet의 Webhooks 이벤트와 Notifications 액션
+- [x] Applet 활성 상태
 - [ ] ThingHTTP 연결 저장 화면 · 모든 키 가림
 - [ ] React의 채널·필드·비교식·실행 옵션
 - [x] 500·700·900 기록 결과와 entry ID
